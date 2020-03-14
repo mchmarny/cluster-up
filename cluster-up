@@ -1,0 +1,39 @@
+#!/bin/bash
+
+DIR="$(dirname "$0")"
+. "${DIR}/config"
+
+set -o errexit
+set -o pipefail
+
+gcloud beta container clusters create $CLUSTER_NAME \
+    --project $CLUSTER_PROJECT \
+    --zone $CLUSTER_ZONE \
+    --release-channel $CLUSTER_RELEASE_CHANNEL \
+    --machine-type $CLUSTER_NODE_MACHINE_TYPE \
+    --image-type "UBUNTU_CONTAINERD" \
+    --disk-type "pd-ssd" --disk-size "100" \
+    --num-nodes "3" --min-nodes "1" --max-nodes "12" \
+    --enable-autoscaling --enable-autoupgrade --enable-autorepair --enable-vertical-pod-autoscaling \
+    --addons HorizontalPodAutoscaling,HttpLoadBalancing,CloudRun \
+    --enable-stackdriver-kubernetes \
+    --maintenance-window-start "2020-03-13T09:00:00Z" --maintenance-window-end "2020-03-13T21:00:00Z" \
+    --maintenance-window-recurrence "FREQ=WEEKLY;BYDAY=SU" \
+    --identity-namespace "cloudylabs.svc.id.goog" \
+    --scopes "https://www.googleapis.com/auth/cloud-platform"
+
+gcloud container clusters get-credentials $CLUSTER_NAME --zone $CLUSTER_ZONE
+
+kubectl create clusterrolebinding cluster-admin-binding \
+    --clusterrole=cluster-admin \
+    --user=$(gcloud config get-value core/account)
+
+gcloud container node-pools create gpu-node-pool \
+  --cluster $CLUSTER_NAME \
+  --zone $CLUSTER_ZONE \
+  --machine-type $CLUSTER_NODE_MACHINE_TYPE \
+  --accelerator "type=nvidia-tesla-v100,count=1" \
+  --num-nodes 1 --min-nodes 1 --max-nodes 2 \
+  --enable-autoscaling
+
+kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/master/nvidia-driver-installer/ubuntu/daemonset-preloaded.yaml

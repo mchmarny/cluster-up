@@ -1,0 +1,49 @@
+#!/bin/bash
+
+DIR="$(dirname "$0")"
+. "${DIR}/config"
+
+set -o errexit
+set -o pipefail
+
+# namespace
+kubectl create ns demo
+
+# static IP create
+gcloud beta compute addresses create "${CLUSTER_NAME}-ip" --region $CLUSTER_REGION
+EXTERNAL_IP=$(gcloud beta compute addresses describe ${CLUSTER_NAME}-ip \
+  --region $CLUSTER_REGION --format "value(address)")
+echo "static IP ${CLUSTER_NAME}-ip: ${EXTERNAL_IP}"
+
+# static IP assign
+kubectl patch svc istio-ingress -n gke-system \
+  -p "{\"spec\":{\"loadBalancerIP\":\"${EXTERNAL_IP}\"}}"
+echo "ingress gateway set to: ${EXTERNAL_IP}"
+
+
+# domain
+kubectl patch configmap config-domain -n knative-serving \
+  -p "{\"data\":{\"${CUSTOM_DOMAIN}\":\"\"}}"
+
+# tls
+kubectl create -n gke-system secret tls istio-ingress-certs \
+  --key $PK_PATH --cert $CA_PATH
+
+# gateway
+kubectl apply -f cr-gateway.yaml
+
+echo "Done"
+echo ""
+
+CURRENT_IP=$(gcloud beta compute addresses describe ${CLUSTER_NAME}-ip \
+    --region=$CLUSTER_REGION --format="value(address)")
+
+if [[ $CURRENT_IP != $EXTERNAL_IP ]]; then
+    echo "The gateway static IP still hasn't applied. Give it another 1-2 min"
+    echo "or keep running the following command until it results in $EXTERNAL_IP"
+    echo "gcloud beta compute addresses describe ${CLUSTER_NAME}-ip --region=$CLUSTER_REGION --format=\"value(address)\""
+fi
+
+echo "Next: "
+echo "   Set ${CUSTOM_DOMAIN} DNS A record to 1m TTL for '*.demo' to ${EXTERNAL_IP}"
+echo "   Run ./cr-test to deploy test app to confirm your installation"
