@@ -1,6 +1,6 @@
 # Cloud Run Up
 
-Series of scripts I use to reliably deploy, configure, and test Cloud Run cluster on GKE
+Series of scripts I use to reliably deploy, configure, and test my demo Cloud Run cluster on GKE
 
 > I'm toying with the idea of wrapping this into a simple CLI that would walk you through the entire process. Let me know if this sounds interesting and what areas the individual scripts below do not cover.
 
