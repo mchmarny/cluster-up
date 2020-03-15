@@ -1,22 +1,22 @@
 #!/bin/bash
 
 # must edit
-CLUSTER_PROJECT="cloudylabs"
 CUSTOM_DOMAIN="cloudylabs.dev"
 
-# optional
+# NOTE: If you do not already have TLS certificates you can use Let's Encrypt to generate them
+# https://letsencrypt.org/docs/client-options/
+# See below for how to create letsencrypt certs using certbot
+TLS_CERT_DIR="${HOME}/.gcp-keys/${CUSTOM_DOMAIN}"
+CA_PATH="${TLS_CERT_DIR}/ca.pem"
+PK_PATH="${TLS_CERT_DIR}/pk.pem"
+
+# optional config
 CLUSTER_NAME="demo"
 CLUSTER_REGION="us-west1"
 CLUSTER_ZONE="${CLUSTER_REGION}-a"
 CLUSTER_NODE_MACHINE_TYPE="n1-standard-4"
 CLUSTER_RELEASE_CHANNEL="regular"
 
-TLS_CERT_DIR="${HOME}/.gcp-keys/${CUSTOM_DOMAIN}"
-CA_PATH="${TLS_CERT_DIR}/ca.pem"
-PK_PATH="${TLS_CERT_DIR}/pk.pem"
-
-# NOTE: If you do not already have TLS certificates you can use Let's Encrypt to generate them
-# https://letsencrypt.org/docs/client-options/
 
 # To create new certs on Mac
 # sudo certbot certonly --manual --preferred-challenges dns -d "*.demo.${CUSTOM_DOMAIN}"

@@ -1,8 +1,12 @@
 # Cloud Run Up
 
-Series of scripts to reliably deploy and configure Cloud Run on GKE
+Series of scripts I use to reliably deploy, configure, and test Cloud Run cluster on GKE
 
 > I'm toying with the idea of wrapping this into a simple CLI that would walk you through the entire process. Let me know if this sounds interesting and what areas the individual scripts below do not cover.
+
+## Pre-requirements
+
+If you don't have one already, start by creating new project and configuring [Google Cloud SDK](https://cloud.google.com/sdk/docs/).
 
 ## Setup
 
@@ -11,8 +15,9 @@ First edit the [config](./config) file. It contains all the variables for this i
 The only two variables you really have to edit are:
 
 ```shell
-CLUSTER_PROJECT="cloudylabs" # GCP project ID
-CUSTOM_DOMAIN="cloudylabs.dev"
+CUSTOM_DOMAIN="your-custom-domain.dev"
+CA_PATH="./ca.pem" # root certificate authority
+PK_PATH="./pk.pem" # custom domain certificate
 ```
 
 > If you do not already have TLS certificates you can use [Let's Encrypt](https://letsencrypt.org/docs/client-options/) to generate them

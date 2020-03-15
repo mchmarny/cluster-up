@@ -7,7 +7,6 @@ set -o errexit
 set -o pipefail
 
 gcloud beta container clusters create $CLUSTER_NAME \
-    --project $CLUSTER_PROJECT \
     --zone $CLUSTER_ZONE \
     --release-channel $CLUSTER_RELEASE_CHANNEL \
     --machine-type $CLUSTER_NODE_MACHINE_TYPE \
