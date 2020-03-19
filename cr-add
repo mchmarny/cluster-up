@@ -37,6 +37,9 @@ gcloud container clusters update $CLUSTER_NAME \
 
 gcloud container clusters get-credentials $CLUSTER_NAME --zone $CLUSTER_ZONE
 
+read -p "Cloud Run add-on installed into your ${CLUSTER_NAME} cluster"
+read -p "Press [Enter] key to start post install configuration..."
+
 # namespace
 kubectl create ns demo
 
