@@ -15,6 +15,7 @@ gcloud beta container node-pools create gpu-node-pool \
   --accelerator "type=nvidia-tesla-v100,count=1" \
   --num-nodes 1 --min-nodes 1 --max-nodes 2 \
   --disk-type "pd-ssd" --disk-size "100" \
-  --enable-autoscaling
+  --enable-autoscaling --enable-autoupgrade --enable-autorepair
+
 
 kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/master/nvidia-driver-installer/ubuntu/daemonset-preloaded.yaml

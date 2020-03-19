@@ -26,8 +26,7 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
   --role "roles/iam.serviceAccountUser"
 
 # allow your user to impersonate the service account
-gcloud iam service-accounts add-iam-policy-binding \
-  "${SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com" \
+gcloud iam service-accounts add-iam-policy-binding "${SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com" \
   --member "user:${CURRENT_ACCOUNT}" \
   --role "roles/iam.serviceAccountTokenCreator"
 

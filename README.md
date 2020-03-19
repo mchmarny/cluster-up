@@ -20,6 +20,16 @@ Setup a new GKE cluster with autoscaling (min 1 node) and 2nd GPU node pool
 ./cluster-up
 ```
 
+## GPU
+
+To add an additional single node GPU node pool (`gpu-node-pool`) with `nvidia-tesla-v100` accelerator (and the appropriate drivers) to the above created cluster, run:
+
+```shell
+./gpu-pool
+```
+
+> Edit the config section in [gpu-pool](./gpu-pool) file to increase the pool size or specify different type of accelerator
+
 ## Cloud Run
 
 ### Config
