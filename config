@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # must edit
-CLUSTER_NAME="demo5"
+export CLUSTER_NAME="demo5"
 
 # optional config
 export CLUSTER_REGION="us-west1"

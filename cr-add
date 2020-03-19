@@ -32,7 +32,10 @@ set -o pipefail
 
 # add
 gcloud container clusters update $CLUSTER_NAME \
-  --update-addons "CloudRun=ENABLED"
+  --update-addons "CloudRun=ENABLED" \
+  --zone $CLUSTER_ZONE
+
+gcloud container clusters get-credentials $CLUSTER_NAME --zone $CLUSTER_ZONE
 
 # namespace
 kubectl create ns demo
