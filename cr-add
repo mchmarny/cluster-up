@@ -3,6 +3,30 @@
 DIR="$(dirname "$0")"
 . "${DIR}/config"
 
+# config /
+
+CUSTOM_DOMAIN="cloudylabs.dev"
+
+# NOTE: If you do not already have TLS certificates you can use Let's Encrypt to generate them
+# https://letsencrypt.org/docs/client-options/
+# See below for how to create letsencrypt certs using certbot
+TLS_CERT_DIR="${HOME}/.gcp-keys/${CUSTOM_DOMAIN}"
+CA_PATH="${TLS_CERT_DIR}/ca.pem"
+PK_PATH="${TLS_CERT_DIR}/pk.pem"
+
+
+# To create new certs on Mac
+# sudo certbot certonly --manual --preferred-challenges dns -d "*.demo.${CUSTOM_DOMAIN}"
+# sudo cp "/etc/letsencrypt/live/demo.${CUSTOM_DOMAIN}/fullchain.pem" $CA_PATH
+# sudo cp "/etc/letsencrypt/live/demo.${CUSTOM_DOMAIN}/privkey.pem" $PK_PATH
+# sudo chmod 644 "${TLS_CERT_DIR}/*.pem"
+
+# To delete previously intalled certs
+# kubectl delete -n gke-system secret istio-ingress-certs
+
+# end config /
+
+
 set -o errexit
 set -o pipefail
 

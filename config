@@ -2,28 +2,14 @@
 
 # must edit
 CLUSTER_NAME="demo1"
-PROJECT_ID="cloudylabs"
-CUSTOM_DOMAIN="cloudylabs.dev"
-
-# NOTE: If you do not already have TLS certificates you can use Let's Encrypt to generate them
-# https://letsencrypt.org/docs/client-options/
-# See below for how to create letsencrypt certs using certbot
-TLS_CERT_DIR="${HOME}/.gcp-keys/${CUSTOM_DOMAIN}"
-CA_PATH="${TLS_CERT_DIR}/ca.pem"
-PK_PATH="${TLS_CERT_DIR}/pk.pem"
 
 # optional config
-CLUSTER_REGION="us-west1"
-CLUSTER_ZONE="${CLUSTER_REGION}-a"
-CLUSTER_NODE_MACHINE_TYPE="n1-standard-4"
-CLUSTER_RELEASE_CHANNEL="regular"
+export CLUSTER_REGION="us-west1"
+export CLUSTER_ZONE="${CLUSTER_REGION}-a"
+export CLUSTER_NODE_MACHINE_TYPE="n1-standard-4"
+export CLUSTER_RELEASE_CHANNEL="regular"
 
-
-# To create new certs on Mac
-# sudo certbot certonly --manual --preferred-challenges dns -d "*.demo.${CUSTOM_DOMAIN}"
-# sudo cp "/etc/letsencrypt/live/demo.${CUSTOM_DOMAIN}/fullchain.pem" $CA_PATH
-# sudo cp "/etc/letsencrypt/live/demo.${CUSTOM_DOMAIN}/privkey.pem" $PK_PATH
-# sudo chmod 644 "${TLS_CERT_DIR}/*.pem"
-
-# To delete previously intalled certs
-# kubectl delete -n gke-system secret istio-ingress-certs
+# derived values
+export PROJECT_ID=$(gcloud config get-value project)
+export CURRENT_ACCOUNT=$(gcloud config get-value account)
+export SERVICE_ACCOUNT="${CLUSTER_NAME}-sa"

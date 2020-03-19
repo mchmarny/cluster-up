@@ -6,10 +6,6 @@ DIR="$(dirname "$0")"
 set -o errexit
 set -o pipefail
 
-# local config
-export CURRENT_ACCOUNT=$(gcloud config get-value account)
-export SERVICE_ACCOUNT="${CLUSTER_NAME}-sa"
-
 # service account
 gcloud iam service-accounts create $SERVICE_ACCOUNT \
   --display-name "${CLUSTER_NAME} Cluster Service Account"
