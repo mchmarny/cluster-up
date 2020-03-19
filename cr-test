@@ -3,14 +3,13 @@
 DIR="$(dirname "$0")"
 . "${DIR}/config"
 
-# deploy test app
-kubectl apply -f cr-test.yaml
+gcloud run deploy "test" \
+    --image "gcr.io/cloudylabs-public/maxprime:0.2.1"
+    --platform gke \
+    --cluster $CLUSTER_NAME \
+    --cluster-location $CLUSTER_ZONE \
+    --namespace demo \
+    --args "RELEASE=v0.2.1-simple"
 
-echo "Test app deployed. Will now check pod STATUS"
-echo "Use CTRL-C when STATUS reads 'Running'"
-read -p "Press enter to start the check..."
-watch kubectl get pods -n demo
-
-echo "Check the deployed service in browser"
-read -p "Press enter to launched the test app..."
+read -p "Press enter to navigate to the test service (https://test.demo.${CUSTOM_DOMAIN})"
 open "https://test.demo.${CUSTOM_DOMAIN}"

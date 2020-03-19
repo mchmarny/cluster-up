@@ -6,33 +6,56 @@ DIR="$(dirname "$0")"
 set -o errexit
 set -o pipefail
 
+# local config
+export CURRENT_ACCOUNT=$(gcloud config get-value account)
+export SERVICE_ACCOUNT="${CLUSTER_NAME}-sa"
+
+# service account
+gcloud iam service-accounts create $SERVICE_ACCOUNT \
+  --display-name "${CLUSTER_NAME} Cluster Service Account"
+
+# grant SA container admin role
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member "serviceAccount:${SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com" \
+  --role "roles/container.admin"
+
+# grant service account actor role
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member "serviceAccount:${SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com" \
+  --role "roles/iam.serviceAccountTokenCreator"
+
+# grant service account user role
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member "serviceAccount:${SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com" \
+  --role "roles/iam.serviceAccountUser"
+
+# allow your user to impersonate the service account
+gcloud iam service-accounts add-iam-policy-binding \
+  "${SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com" \
+  --member "user:${CURRENT_ACCOUNT}" \
+  --role "roles/iam.serviceAccountTokenCreator"
+
+# finally, claster
 gcloud beta container clusters create $CLUSTER_NAME \
     --zone $CLUSTER_ZONE \
     --release-channel $CLUSTER_RELEASE_CHANNEL \
+    --addons HorizontalPodAutoscaling,HttpLoadBalancing \
     --machine-type $CLUSTER_NODE_MACHINE_TYPE \
     --image-type "UBUNTU_CONTAINERD" \
     --disk-type "pd-ssd" --disk-size "100" \
     --num-nodes "3" --min-nodes "1" --max-nodes "12" \
     --enable-autoscaling --enable-autoupgrade --enable-autorepair --enable-vertical-pod-autoscaling \
-    --addons HorizontalPodAutoscaling,HttpLoadBalancing,CloudRun \
     --enable-stackdriver-kubernetes \
     --maintenance-window-start "2020-03-13T09:00:00Z" --maintenance-window-end "2020-03-13T21:00:00Z" \
     --maintenance-window-recurrence "FREQ=WEEKLY;BYDAY=SU" \
-    --identity-namespace "cloudylabs.svc.id.goog" \
-    --scopes "https://www.googleapis.com/auth/cloud-platform"
+    --identity-namespace "${PROJECT_ID}.svc.id.goog" \
+    --impersonate-service-account "${SERVICE_ACCOUNT}@${PROJECT_ID}.iam.gserviceaccount.com" \
+    --scopes "cloud-platform"
+
 
 gcloud container clusters get-credentials $CLUSTER_NAME --zone $CLUSTER_ZONE
 
 kubectl create clusterrolebinding cluster-admin-binding \
-    --clusterrole=cluster-admin \
-    --user=$(gcloud config get-value core/account)
+    --clusterrole "cluster-admin" \
+    --user $(gcloud config get-value core/account)
 
-gcloud container node-pools create gpu-node-pool \
-  --cluster $CLUSTER_NAME \
-  --zone $CLUSTER_ZONE \
-  --machine-type $CLUSTER_NODE_MACHINE_TYPE \
-  --accelerator "type=nvidia-tesla-v100,count=1" \
-  --num-nodes 1 --min-nodes 1 --max-nodes 2 \
-  --enable-autoscaling
-
-kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/master/nvidia-driver-installer/ubuntu/daemonset-preloaded.yaml

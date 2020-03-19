@@ -1,0 +1,20 @@
+#!/bin/bash
+
+DIR="$(dirname "$0")"
+. "${DIR}/config"
+
+set -o errexit
+set -o pipefail
+
+
+gcloud beta container node-pools create gpu-node-pool \
+  --cluster $CLUSTER_NAME \
+  --zone $CLUSTER_ZONE \
+  --machine-type $CLUSTER_NODE_MACHINE_TYPE \
+  --image-type "UBUNTU_CONTAINERD" \
+  --accelerator "type=nvidia-tesla-v100,count=1" \
+  --num-nodes 1 --min-nodes 1 --max-nodes 2 \
+  --disk-type "pd-ssd" --disk-size "100" \
+  --enable-autoscaling
+
+kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/master/nvidia-driver-installer/ubuntu/daemonset-preloaded.yaml

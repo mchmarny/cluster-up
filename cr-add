@@ -6,6 +6,10 @@ DIR="$(dirname "$0")"
 set -o errexit
 set -o pipefail
 
+# add
+gcloud container clusters update $CLUSTER_NAME \
+  --update-addons "CloudRun=ENABLED"
+
 # namespace
 kubectl create ns demo
 
