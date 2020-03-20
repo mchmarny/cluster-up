@@ -6,13 +6,11 @@ Series of scripts I use to reliably deploy, configure, and test GKE cluster base
 
 If you don't have one already, start by creating new project and configuring [Google Cloud SDK](https://cloud.google.com/sdk/docs/).
 
-## Cluster
-
-### Config
+## Config
 
 First edit the [config](./config) file. It contains all the variables for this install. Once you edit that file you should not have to edit any other scripts in this install.
 
-### Create GKE cluster
+## Create GKE cluster
 
 Setup a new GKE cluster with autoscaling (min 1 node) and 2nd GPU node pool
 
