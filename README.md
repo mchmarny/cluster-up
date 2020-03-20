@@ -22,7 +22,9 @@ Setup a new GKE cluster with autoscaling (min 1 node) and 2nd GPU node pool
 
 * [GPU node pool](./gpu/README.md)
 * [Cloud Run](./cloud-run/README.md)
-
+* Istio
+* Tekton
+* Application Manager
 
 ## Disclaimer
 
