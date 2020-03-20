@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# must edit
-export CLUSTER_NAME="demo5"
-
-# optional config
+# cluster cariables
+export CLUSTER_NAME="demo"
 export CLUSTER_REGION="us-west1"
 export CLUSTER_ZONE="${CLUSTER_REGION}-a"
 export CLUSTER_NODE_MACHINE_TYPE="n1-standard-4"
