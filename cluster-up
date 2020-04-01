@@ -41,6 +41,9 @@ gcloud beta container clusters create $CLUSTER_NAME \
     --num-nodes "3" --min-nodes "1" --max-nodes "12" \
     --enable-autoscaling --enable-autoupgrade --enable-autorepair --enable-vertical-pod-autoscaling \
     --enable-stackdriver-kubernetes \
+    --enable-ip-alias \
+    --network=default \
+    --create-subnetwork "" \
     --maintenance-window-start "2020-03-13T09:00:00Z" --maintenance-window-end "2020-03-13T21:00:00Z" \
     --maintenance-window-recurrence "FREQ=WEEKLY;BYDAY=SU" \
     --identity-namespace "${PROJECT_ID}.svc.id.goog" \
